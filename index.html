@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -10,45 +10,30 @@
 
 <body class="min-h-screen bg-base-200">
 
-    <main class="flex min-h-screen flex-col items-center justify-center gap-8 px-4">
+    <main class="flex min-h-screen flex-col items-center gap-8 px-4">
 
-        <!-- Search -->
-        <form class="flex w-full max-w-xl gap-3">
+        <form id="weatherForm" class="flex w-full max-w-xl gap-2 p-10">
+            <input id="cityInput" type="text" placeholder="Enter city"
+                class="input input-amber input-md w-full text-2xl font-bold">
 
-            <input type="text" placeholder="Enter city" class="input h-20 w-full text-2xl">
-
-            <button class="btn btn-info btn-sm" type="submit">
+            <button class="btn bg-amber-500 btn-md text-white rounded-sm" type="submit">
                 Get Weather
             </button>
-
         </form>
 
-
-        <!-- Weather Card -->
-        <div class="card w-full max-w-xl bg-base-100 shadow-xl">
-
+        <div id="card" class="card w-full max-w-xl bg-white shadow-xl border" style="display: none;">
             <div class="card-body items-center text-center">
-
-                <!-- City -->
                 <h1 class="cityDisplay text-4xl font-bold">
                     Bitungol
                 </h1>
-
-                <!-- Temperature -->
                 <p class="tempDisplay text-6xl font-bold">
                     29°C
                 </p>
-
-                <!-- Weather -->
                 <p class="text-lg">
                     ☀️ Sunny
                 </p>
-
-                <!-- Details -->
                 <div class="divider"></div>
-
                 <div class="grid w-full grid-cols-2 gap-4">
-
                     <div class="rounded-xl bg-base-200 p-4">
                         <p class="text-sm opacity-60">
                             Humidity
@@ -74,6 +59,7 @@
         </div>
 
     </main>
+    <script src="index.js"></script>
     <script type="module" src="/src/main.js"></script>
 
 </body>
