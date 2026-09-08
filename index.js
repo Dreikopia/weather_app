@@ -1,31 +1,51 @@
 const weatherForm = document.querySelector("#weatherForm");
 const cityInput = document.querySelector("#cityInput");
+
 const card = document.querySelector("#card");
+const errorDisplay = document.querySelector("#errorDisplay");
+
+const cityDisplay = document.querySelector("#cityDisplay");
+const tempDisplay = document.querySelector("#tempDisplay");
+const weatherDisplay = document.querySelector("#weatherDisplay");
+const humidityDisplay = document.querySelector("#humidityDisplay");
+const conditionDisplay = document.querySelector("#conditionDisplay");
 
 const apiKey = "4a899520093b0aa078c4dbee8663477f";
 
 
-weatherForm.addEventListener('submit', async event => {
+weatherForm.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
-    const city = cityInput.value;
+    const city = cityInput.value.trim();
 
-    if (city) {
-        try {
-            const weatherData = await getWeatherData(city);
-            displayWeatherInfo(weatherData);
+    if (!city) {
+        showError("Please enter a city.");
+        return;
+    }
 
-        } catch (error) {
-            displayError("Please Enter a city");
-        }
-    } else {
+    hideError();
+
+    try {
+
+        const weatherData = await getWeatherData(city);
+
+        displayWeatherInfo(weatherData);
+
+    } catch (error) {
+
+        showError("Couldn't find that city.");
 
     }
+
 });
 
+
+// Fetch weather
 async function getWeatherData(city) {
-    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
+
+    const apiUrl =
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
 
     const response = await fetch(apiUrl);
 
@@ -36,84 +56,89 @@ async function getWeatherData(city) {
     return await response.json();
 }
 
-const toCelsius = kelvin => Math.round(kelvin - 273.15);
 
-function displayWeatherInfo(data) {
-    const { name: city, main: { temp, humidity }, weather: [{ description, id }] } = data;
+// Convert Kelvin → Celsius
+function toCelsius(kelvin) {
 
-    card.textContent = "";
-    card.style.display = "flex";
-    card.textContent = "";
-    card.style.display = "flex";
+    return Math.round(kelvin - 273.15);
 
-    const cardBody = document.createElement("div");
-    cardBody.className = "card-body items-center text-center";
-
-    const cityDisplay = document.createElement("h1");
-    const tempDisplay = document.createElement("p");
-    const humidityDisplay = document.createElement("p");
-    const descDisplay = document.createElement("p");
-    const weatherEmoji = document.createElement("p");
-
-    const celsiusTemp = toCelsius(temp).toFixed(1);
-
-    cityDisplay.textContent = city;
-    tempDisplay.textContent = `${celsiusTemp}°C`;
-    humidityDisplay.textContent = `Humidity: ${humidity}%`;
-    descDisplay.textContent = description;
-    weatherEmoji.textContent = getWeatherEmoji(id);
-
-    cityDisplay.className = 'text-black font-bold text-4xl items-center';
-    tempDisplay.className = 'text-info';
-    humidityDisplay.className = 'text-red-500';
-    descDisplay.className = 'text-green-500';
-    weatherEmoji.className = 'text-green-500';
-
-    card.appendChild(cityDisplay);
-    card.appendChild(tempDisplay);
-    card.appendChild(humidityDisplay);
-    card.appendChild(descDisplay);
-    card.appendChild(weatherEmoji);
 }
 
+
+function displayWeatherInfo(data) {
+
+    const {
+        name: city,
+        main: {
+            temp,
+            humidity
+        },
+        weather: [
+            {
+                description,
+                id
+            }
+        ]
+    } = data;
+
+
+    cityDisplay.textContent = city;
+    tempDisplay.textContent = `${toCelsius(temp)}°C`;
+    weatherDisplay.textContent = `${getWeatherEmoji(id)} ${description}`;
+    humidityDisplay.textContent = `${humidity}%`;
+    conditionDisplay.textContent = description;
+
+
+    card.classList.remove("hidden");
+}
+
+
+function showError(message) {
+
+    card.classList.add("hidden");
+
+    errorDisplay.textContent = message;
+
+    errorDisplay.classList.remove("hidden");
+
+}
+
+
+function hideError() {
+
+    errorDisplay.classList.add("hidden");
+
+    errorDisplay.textContent = "";
+
+}
 
 
 function getWeatherEmoji(weatherId) {
+
     switch (true) {
-        case (weatherId >= 200 && weatherId < 300):
+
+        case weatherId >= 200 && weatherId < 300:
             return "⛈️";
 
-        case (weatherId >= 300 && weatherId < 400):
+        case weatherId >= 300 && weatherId < 400:
             return "🌧️";
 
-        case (weatherId >= 500 && weatherId < 600):
+        case weatherId >= 500 && weatherId < 600:
             return "🌧️";
-        case (weatherId >= 600 && weatherId < 700):
+
+        case weatherId >= 600 && weatherId < 700:
             return "❄️";
-        case (weatherId >= 700 && weatherId < 800):
+
+        case weatherId >= 700 && weatherId < 800:
             return "😶‍🌫️";
-        case (weatherId === 800):
+
+        case weatherId === 800:
             return "☀️";
-        case (weatherId >= 801 && weatherId < 810):
+
+        case weatherId >= 801 && weatherId < 810:
             return "☁️";
+
         default:
-            return "?";
+            return "❓";
     }
 }
-
-function displayError(message) {
-    const errorDisplay = document.createElement("p");
-    errorDisplay.textContent = message;
-
-    errorDisplay.classList.add(
-        "text-red-500",
-        "font-bold",
-        "text-center",
-        "mt-4"
-    );
-
-    card.textContent = "";
-    card.style.display = "flex";
-    card.appendChild(errorDisplay);
-}
-
